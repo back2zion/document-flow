@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문서 파일 처리 흐름도</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow: hidden;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .process-box {
+            position: relative;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+        .process-step {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-bottom: 20px;
+        }
+        .step-title {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+            width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .step-title.neoali {
+            background-color: #9b59b6;
+        }
+        .step-title.datastreams {
+            background-color: #e67e22;
+        }
+        .step-details {
+            flex: 1;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px 20px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .step-details.neoali {
+            border-left: 4px solid #9b59b6;
+        }
+        .step-details.datastreams {
+            border-left: 4px solid #e67e22;
+        }
+        .arrow {
+            position: relative;
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px 0;
+        }
+        .arrow::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #3498db;
+        }
+        .layer-box {
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            background-color: #f8f9fa;
+        }
+        .layer-box.neoali {
+            border-color: #9b59b6;
+            background-color: #f4f0f7;
+        }
+        .layer-box.datastreams {
+            border-color: #e67e22;
+            background-color: #fdf2e9;
+        }
+        .layer-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .layer-title.neoali {
+            color: #9b59b6;
+        }
+        .layer-title.datastreams {
+            color: #e67e22;
+        }
+        .process-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .process-item {
+            flex: 1;
+            background-color: white;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin: 0 10px;
+            min-width: 180px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-left: 3px solid #2ecc71;
+        }
+        .process-item.exclude {
+            border-left: 3px solid #e74c3c;
+        }
+        .process-item.neoali {
+            border-left: 3px solid #9b59b6;
+        }
+        .process-item.datastreams {
+            border-left: 3px solid #e67e22;
+        }
+        .decision {
+            background-color: #f39c12;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .flow-arrow::before {
+            content: "";
+            flex-grow: 1;
+            height: 2px;
+            background-color: #3498db;
+            margin-right: 10px;
+        }
+        .flow-arrow::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 8px solid #3498db;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+        .parallel-flows {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .flow-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 15px;
+            position: relative;
+        }
+        .flow-column:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #e0e0e0;
+        }
+        .note {
+            background-color: #fffacd;
+            border-left: 4px solid #f1c40f;
+            padding: 12px 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .important-note {
+            background-color: #ffebee;
+            border-left: 4px solid #e74c3c;
+            padding: 12px 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .tech-box {
+            background-color: #f1f9f7;
+            border: 2px solid #2ecc71;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .tech-item {
+            margin-bottom: 8px;
+            padding-left: 18px;
+            position: relative;
+        }
+        .tech-item::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        .file-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .file-type {
+            background-color: #e8f4fd;
+            color: #3498db;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .company-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .neoali-badge {
+            background-color: #9b59b6;
+            color: white;
+        }
+        .datastreams-badge {
+            background-color: #e67e22;
+            color: white;
+        }
+        .version-box {
+            background-color: #e8f5e8;
+            border: 2px solid #27ae60;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .faq-container {
+            margin-top: 10px;
+        }
+        .faq-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+        .faq-question {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+            min-height: 24px;
+            box-sizing: border-box;
+        }
+        .faq-question:hover {
+            background-color: #f0f0f0;
+        }
+        .faq-question:after {
+            content: "+";
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .faq-question.active:after {
+            content: "-";
+            color: #e74c3c;
+        }
+        .faq-answer {
+            display: none;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        .faq-answer.show {
+            display: block;
+        }
+        .faq-category {
+            background-color: #e8f4fd;
+            padding: 8px 15px;
+            margin: 15px 0 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>문서 파일 처리 흐름도</h1>
+        
+        <div class="flow-container">
+            <!-- 최초 업로드 -->
+            <div class="process-box">
+                <div class="process-step">
+                    <div class="step-title">시작</div>
+                    <div class="step-details">사용자가 다양한 문서 파일(HWP, HWPX, DOC, DOCX, PPT, PPTX, TXT, XLS, XLSX 등)을 시스템에 업로드</div>
+                </div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- NeoAli 파싱 레이어 (첫 번째 처리) -->
+            <div class="layer-box neoali">
+                <div class="layer-title neoali">NeoAli 파싱 레이어<span class="neoali-badge">NeoAli</span></div>
+                
+                <div class="process-group">
+                    <div class="process-item neoali">
+                        <h3>텍스트 추출</h3>
+                        <p>MinIO에서 스트림으로 문서 읽어서 텍스트 추출</p>
+                        <p>로컬 다운로드 없이 메모리에서 처리</p>
+                    </div>
+                    
+                    <div class="process-item neoali">
+                        <h3>Knowledge Parser 실행</h3>
+                        <p>하이브리드 파서로 다양한 문서 형식 처리</p>
+                        <p>HWP/HWPX 버전별 대응 파이프라인 적용</p>
+                    </div>
+                </div>
+                
+                <div class="flow-arrow"></div>
+                
+                <div class="process-group">
+                    <div class="process-item neoali">
+                        <h3>API 호출 준비</h3>
+                        <p>정제된 텍스트와 메타데이터를 JSON 형태로 변환</p>
+                        <p><code>POST /api/documents/ingest</code></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- DataStreams 전처리 레이어 -->
+            <div class="layer-box datastreams">
+                <div class="layer-title datastreams">DataStreams 전처리 레이어<span class="datastreams-badge">DataStreams</span></div>
+                
+                <div class="process-group">
+                    <div class="process-item datastreams">
+                        <h3>중복 검사</h3>
+                        <p>MinIO에 저장된 기존 문서들과 유사도 비교</p>
+                        <p>로컬 다운로드 없이 메모리에서 처리</p>
+                    </div>
+                    
+                    <div class="process-item datastreams">
+                        <h3>개인정보 검출</h3>
+                        <p>추출된 텍스트에서 개인정보 검출</p>
+                        <p>presidio 라이브러리 활용</p>
+                        <p><strong>※ 관리자 업로드만 Human-in-the-Loop 적용</strong></p>
+                    </div>
+                </div>
+                
+                <div class="flow-arrow"></div>
+                
+                <!-- 분기 처리 -->
+                <div class="process-group">
+                    <div class="process-item datastreams">
+                        <div class="decision">👤</div>
+                        <h3>관리자 업로드</h3>
+                        <p>개인정보 검출 시 Human-in-the-Loop</p>
+                        <p>도로공사 직원이 최종 승인 여부 판단</p>
+                    </div>
+                    
+                    <div class="process-item datastreams">
+                        <div class="decision">✓</div>
+                        <h3>사용자 업로드</h3>
+                        <p>개인정보 포함 여부와 관계없이 처리</p>
+                        <p>질의응답 완료 후 자동 삭제</p>
+                    </div>
+                </div>
+                
+                <div class="flow-arrow"></div>
+                
+                <div class="process-item datastreams">
+                    <h3>원본 저장 및 승인 처리</h3>
+                    <p>중복이 아닌 것으로 확인된 원본 문서 파일이 MinIO 서버에 저장됨 (포트 9090)</p>
+                    <p><strong>관리자 업로드:</strong> Human-in-the-Loop 승인 후 영구 저장</p>
+                    <p><strong>사용자 업로드:</strong> 임시 저장 후 질의응답 완료 시 자동 삭제</p>
+                </div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- NeoAli RAG 레이어 -->
+            <div class="layer-box neoali">
+                <div class="layer-title neoali">NeoAli RAG 레이어<span class="neoali-badge">NeoAli</span></div>
+                
+                <div class="parallel-flows">
+                    <div class="flow-column">
+                        <div class="process-item neoali">
+                            <h3>문서 수신</h3>
+                            <p>API 엔드포인트를 통해 정제된 문서 수신</p>
+                        </div>
+                        
+                        <div class="flow-arrow"></div>
+                        
+                        <div class="process-item neoali">
+                            <h3>청킹</h3>
+                            <p>문서를 의미 있는 단위로 분할</p>
+                        </div>
+                        
+                        <div class="flow-arrow"></div>
+                        
+                        <div class="process-item neoali">
+                            <h3>임베딩</h3>
+                            <p>vLLM-embeddings 서버로 벡터 생성</p>
+                        </div>
+                        
+                        <div class="flow-arrow"></div>
+                        
+                        <div class="process-item neoali">
+                            <h3>벡터 저장</h3>
+                            <p>Qdrant 벡터 DB에 저장</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 사용자 유형별 처리 흐름 -->
+            <div class="layer-box">
+                <div class="layer-title">사용자 유형별 처리 흐름</div>
+                
+                <div class="process-group">
+                    <div class="process-item">
+                        <h3>관리자 대량 업로드</h3>
+                        <ul style="text-align: left; padding-left: 20px;">
+                            <li>배치 처리 방식 사용</li>
+                            <li>비동기 처리로 백그라운드 실행</li>
+                            <li>작업 진행상황 모니터링 제공</li>
+                            <li>오류 로깅 및 보고 기능</li>
+                            <li>처리 완료 후 통합 결과 보고</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="process-item">
+                        <h3>일반 사용자 개별 업로드</h3>
+                        <ul style="text-align: left; padding-left: 20px;">
+                            <li>실시간 처리 방식 사용</li>
+                            <li>동기식 처리로 즉시 결과 반환</li>
+                            <li>개별 파일 상태 실시간 제공</li>
+                            <li>사용자 피드백 즉시 반영</li>
+                            <li><strong>질의응답 완료 후 자동 삭제</strong></li>
+                            <li><strong>임시 저장소에만 보관 (영구 저장 없음)</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="note">
+                <p><strong>사용자 유형별 개인정보 처리 방식:</strong> 관리자 업로드 시에는 개인정보 검출 결과를 도로공사 직원이 검토하여 최종 승인 여부를 결정하는 Human-in-the-Loop 방식을 적용합니다. 사용자 개별 업로드의 경우 개인정보 포함 여부와 관계없이 처리되며, 질의응답 완료 후 자동으로 삭제됩니다.</p>
+            </div>
+            
+            <!-- FAQ 섹션 -->
+            <div class="layer-box">
+                <div class="layer-title">FAQ</div>
+                
+                <div class="faq-container">
+                    <div class="faq-category">파일 처리 제한 및 용량</div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">사용자가 업로드할 수 있는 파일 크기와 개수 제한은 어떻게 되나요?</div>
+                        <div class="faq-answer">
+                            <p>사용자 업로드는 <strong>파일당 100MB 이하, 최대 5개 파일</strong>까지 가능합니다. 이는 서버 리소스를 효율적으로 관리하고 처리 시간을 최적화하기 위한 제한입니다. 관리자 업로드의 경우 별도의 배치 처리 시스템을 통해 더 큰 용량과 많은 수의 파일을 처리할 수 있습니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">대용량 파일 처리 시 메모리 문제는 어떻게 해결하나요?</div>
+                        <div class="faq-answer">
+                            <p>대용량 파일 처리 시 다음과 같은 메모리 관리 전략을 사용합니다:</p>
+                            <ul>
+                                <li><strong>스트림 처리:</strong> 파일 전체를 메모리에 로드하지 않고 청크 단위로 스트림 처리</li>
+                                <li><strong>메모리 한계 설정:</strong> 각 처리 작업에 메모리 상한선 설정</li>
+                                <li><strong>가비지 컬렉션 최적화:</strong> 주기적인 가비지 컬렉션으로 미사용 메모리 해제</li>
+                                <li><strong>임시 파일 사용:</strong> 필요 시 디스크 기반 임시 파일 활용</li>
+                            </ul>
+                            <p>이러한 전략을 통해 OOM(Out of Memory) 오류를 방지하고 안정적인 파일 처리를 보장합니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-category">성능 및 확장성</div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">한 번에 몇 개의 파일까지 동시 처리 가능한가요?</div>
+                        <div class="faq-answer">
+                            <p>시스템은 서버 리소스에 따라 동적으로 조정되지만, 기본 설정은 다음과 같습니다:</p>
+                            <ul>
+                                <li><strong>사용자 요청:</strong> 동시에 최대 10개 요청(각 최대 5개 파일) 처리</li>
+                                <li><strong>관리자 배치 처리:</strong> 서버 부하에 따라 20-50개 파일 동시 처리</li>
+                                <li><strong>자동 조정:</strong> 서버 부하에 따라 처리량 자동 조절</li>
+                            </ul>
+                            <p>처리 큐를 사용하여 요청이 많을 경우 대기열에 추가되며, 시스템 부하에 따라 처리 속도가 조절됩니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">파일 형식이나 HWP 버전 업데이트에 어떻게 대응하나요?</div>
+                        <div class="faq-answer">
+                            <p>파일 형식 및 버전 변경에 대응하기 위한 전략:</p>
+                            <ul>
+                                <li><strong>모듈식 파서 설계:</strong> 파일 형식별 파서를 모듈화하여 개별 업데이트 가능</li>
+                                <li><strong>버전 감지 로직:</strong> 파일 헤더 분석을 통한 버전 자동 감지</li>
+                                <li><strong>폴백 메커니즘:</strong> 새 버전 처리 실패 시 대체 파서 사용</li>
+                                <li><strong>정기 업데이트:</strong> 한컴 공식 문서 기반 파서 정기 업데이트</li>
+                            </ul>
+                            <p>특히 HWP의 경우, 5.0 이전/이후 버전과 HWPX(XML 기반) 형식에 대한 별도 처리 로직을 갖추고 있습니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-category">오류 처리 및 보안</div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">손상된 파일이나 비정상 형식은 어떻게 처리하나요?</div>
+                        <div class="faq-answer">
+                            <p>손상된 파일 처리를 위한 안전장치:</p>
+                            <ul>
+                                <li><strong>파일 무결성 검사:</strong> 파일 구조 검증으로 손상 여부 확인</li>
+                                <li><strong>예외 처리:</strong> 파싱 오류 발생 시 세부 정보 로깅 후 안전하게 처리 중단</li>
+                                <li><strong>부분 추출:</strong> 손상된 파일에서도 읽을 수 있는 부분 최대한 추출</li>
+                                <li><strong>사용자 피드백:</strong> 파일 손상 시 명확한 오류 메시지 제공</li>
+                            </ul>
+                            <p>비정상 파일 처리 시 시스템 전체에 영향이 없도록 격리된 환경에서 처리합니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">메모리 내 처리 중 민감 정보 보호는 어떻게 하나요?</div>
+                        <div class="faq-answer">
+                            <p>메모리 내 데이터 보호 방법:</p>
+                            <ul>
+                                <li><strong>메모리 암호화:</strong> 민감한 데이터는 메모리 내에서도 암호화</li>
+                                <li><strong>메모리 초기화:</strong> 사용 후 메모리 영역 명시적 초기화(zeroing)</li>
+                                <li><strong>접근 제한:</strong> 메모리 덤프 및 디버깅 도구 접근 제한</li>
+                                <li><strong>컨테이너 격리:</strong> 각 처리 작업은 격리된 컨테이너에서 실행</li>
+                            </ul>
+                            <p>특히 사용자 업로드 파일은 처리 완료 후 메모리에서 즉시 제거되며, 관련 모든 메모리 공간이 초기화됩니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-category">AI 및 기술 구현</div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">이 시스템에서 'AI'의 역할은 정확히 무엇인가요?</div>
+                        <div class="faq-answer">
+                            <p>이 시스템에서 AI는 다음과 같은 역할을 담당합니다:</p>
+                            <ul>
+                                <li><strong>텍스트 임베딩 생성:</strong> 문서 내용을 의미적 벡터로 변환(NeoAli RAG)</li>
+                                <li><strong>유사도 분석:</strong> 문서 간 의미적 유사성 판단(중복 검사)</li>
+                                <li><strong>개인정보 탐지:</strong> 텍스트 내 개인정보 패턴 인식 및 분류</li>
+                                <li><strong>문서 분류:</strong> 내용 기반 문서 자동 분류 및 태깅</li>
+                                <li><strong>질의응답:</strong> 문서 기반 질문에 대한 정확한 답변 생성</li>
+                            </ul>
+                            <p>단순한 파일 파싱을 넘어, 자연어 처리와 기계학습 기술이 문서 내용의 의미적 이해와 활용에 핵심적 역할을 합니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">MinIO와 같은 저장소 접근은 어떻게 관리되나요?</div>
+                        <div class="faq-answer">
+                            <p>저장소 접근 관리 방식:</p>
+                            <ul>
+                                <li><strong>역할 기반 접근 제어(RBAC):</strong> 사용자 역할에 따른 권한 설정</li>
+                                <li><strong>임시 자격 증명:</strong> 필요한 작업에만 유효한 단기 접근 토큰 발급</li>
+                                <li><strong>암호화 전송:</strong> TLS/SSL을 통한 모든 데이터 전송 암호화</li>
+                                <li><strong>접근 감사:</strong> 모든 저장소 접근 로깅 및 모니터링</li>
+                                <li><strong>네트워크 격리:</strong> MinIO 서버는 내부 네트워크에서만 접근 가능</li>
+                            </ul>
+                            <p>특히 사용자 업로드 파일은 분리된 임시 버킷에 저장되며, 해당 버킷은 정기적으로 자동 정리됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                // FAQ 아코디언 기능
+                document.addEventListener('DOMContentLoaded', function() {
+                    const questions = document.querySelectorAll('.faq-question');
+                    
+                    questions.forEach(question => {
+                        question.addEventListener('click', () => {
+                            const answer = question.nextElementSibling;
+                            const isOpen = answer.classList.contains('show');
+                            
+                            // 모든 답변 닫기
+                            document.querySelectorAll('.faq-answer').forEach(a => {
+                                a.classList.remove('show');
+                            });
+                            
+                            document.querySelectorAll('.faq-question').forEach(q => {
+                                q.classList.remove('active');
+                            });
+                            
+                            // 클릭한 것만 열기 (이미 열려있었다면 닫힘)
+                            if (!isOpen) {
+                                answer.classList.add('show');
+                                question.classList.add('active');
+                            }
+                        });
+                    });
+                    
+                    // 페이지 로드 시 첫 번째 질문 자동 열기
+                    if (questions.length > 0) {
+                        questions[0].click();
+                    }
+                });
+            </script>
+        </div>
+    </div>
+</body>
+</html>
