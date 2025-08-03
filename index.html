@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>문서 파일 처리 흐름도</title>
+    <title>문서 파일 처리 흐름도 - R&R 구분</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -188,6 +188,12 @@
             border-top: 8px solid transparent;
             border-bottom: 8px solid transparent;
         }
+        .flow-arrow.datastreams::before {
+            background-color: #e67e22;
+        }
+        .flow-arrow.datastreams::after {
+            border-left: 8px solid #e67e22;
+        }
         .parallel-flows {
             display: flex;
             justify-content: space-between;
@@ -218,13 +224,21 @@
             border-radius: 4px;
             font-style: italic;
         }
-        .important-note {
-            background-color: #ffebee;
-            border-left: 4px solid #e74c3c;
-            padding: 12px 15px;
-            margin: 20px 0;
+        .company-badge {
+            display: inline-block;
+            padding: 4px 8px;
             border-radius: 4px;
+            font-size: 0.8em;
             font-weight: bold;
+            margin-left: 10px;
+        }
+        .neoali-badge {
+            background-color: #9b59b6;
+            color: white;
+        }
+        .datastreams-badge {
+            background-color: #e67e22;
+            color: white;
         }
         .tech-box {
             background-color: #f1f9f7;
@@ -245,104 +259,11 @@
             color: #2ecc71;
             font-weight: bold;
         }
-        .file-types {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 10px 0;
-        }
-        .file-type {
-            background-color: #e8f4fd;
-            color: #3498db;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        .company-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .neoali-badge {
-            background-color: #9b59b6;
-            color: white;
-        }
-        .datastreams-badge {
-            background-color: #e67e22;
-            color: white;
-        }
-        .version-box {
-            background-color: #e8f5e8;
-            border: 2px solid #27ae60;
-            border-radius: 6px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        .faq-container {
-            margin-top: 10px;
-        }
-        .faq-item {
-            margin-bottom: 15px;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 15px;
-        }
-        .faq-question {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 8px;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-            min-height: 24px;
-            box-sizing: border-box;
-        }
-        .faq-question:hover {
-            background-color: #f0f0f0;
-        }
-        .faq-question:after {
-            content: "+";
-            font-size: 18px;
-            font-weight: bold;
-            color: #3498db;
-            width: 20px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        .faq-question.active:after {
-            content: "-";
-            color: #e74c3c;
-        }
-        .faq-answer {
-            display: none;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            font-size: 0.95em;
-        }
-        .faq-answer.show {
-            display: block;
-        }
-        .faq-category {
-            background-color: #e8f4fd;
-            padding: 8px 15px;
-            margin: 15px 0 10px 0;
-            border-radius: 4px;
-            font-weight: bold;
-            color: #3498db;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>문서 파일 처리 흐름도</h1>
+        <h1>ex-GPT 프로젝트 문서 처리 흐름도 (R&R 구분)</h1>
         
         <div class="flow-container">
             <!-- 최초 업로드 -->
@@ -355,53 +276,61 @@
             
             <div class="arrow"></div>
             
-            <!-- NeoAli 파싱 레이어 (첫 번째 처리) -->
+            <!-- 1단계: 문서 파싱 & 추출 (NeoAli) -->
             <div class="layer-box neoali">
-                <div class="layer-title neoali">NeoAli 파싱 레이어<span class="neoali-badge">NeoAli</span></div>
+                <div class="layer-title neoali">1단계: 문서 파싱 & 텍스트 추출<span class="neoali-badge">NeoAli 담당</span></div>
                 
                 <div class="process-group">
                     <div class="process-item neoali">
-                        <h3>텍스트 추출</h3>
-                        <p>MinIO에서 스트림으로 문서 읽어서 텍스트 추출</p>
-                        <p>로컬 다운로드 없이 메모리에서 처리</p>
+                        <h3>📄 파일 수신 및 검증</h3>
+                        <p>MinIO에서 업로드된 파일 수신</p>
+                        <p>파일 형식 및 크기 검증</p>
+                        <p>지원 형식: HWP, HWPX, DOC, DOCX, PDF, TXT, XLS, XLSX</p>
                     </div>
                     
                     <div class="process-item neoali">
-                        <h3>Knowledge Parser 실행</h3>
-                        <p>하이브리드 파서로 다양한 문서 형식 처리</p>
-                        <p>HWP/HWPX 버전별 대응 파이프라인 적용</p>
+                        <h3>🔧 하이브리드 파서 실행</h3>
+                        <p>스트림 방식으로 메모리에서 직접 처리</p>
+                        <p>파일별 전용 파서 적용</p>
+                        <p>로컬 다운로드 없이 텍스트 추출</p>
                     </div>
-                </div>
-                
-                <div class="flow-arrow"></div>
-                
-                <div class="process-group">
+                    
                     <div class="process-item neoali">
-                        <h3>API 호출 준비</h3>
-                        <p>정제된 텍스트와 메타데이터를 JSON 형태로 변환</p>
-                        <p><code>POST /api/documents/ingest</code></p>
+                        <h3>📤 결과물 전달</h3>
+                        <p><strong>추출된 순수 텍스트를</strong></p>
+                        <p><strong>DataStreams에게 전달</strong></p>
+                        <p>메타데이터와 함께 구조화된 형태로 제공</p>
                     </div>
                 </div>
             </div>
             
-            <div class="arrow"></div>
+            <div class="flow-arrow datastreams"></div>
             
-            <!-- DataStreams 전처리 레이어 -->
+            <!-- 2단계: 전처리 & 보안 레이어 (DataStreams) -->
             <div class="layer-box datastreams">
-                <div class="layer-title datastreams">DataStreams 전처리 레이어<span class="datastreams-badge">DataStreams</span></div>
+                <div class="layer-title datastreams">2단계: 전처리 & 보안 레이어<span class="datastreams-badge">DataStreams 담당</span></div>
                 
                 <div class="process-group">
                     <div class="process-item datastreams">
-                        <h3>중복 검사</h3>
-                        <p>MinIO에 저장된 기존 문서들과 유사도 비교</p>
-                        <p>로컬 다운로드 없이 메모리에서 처리</p>
+                        <h3>📥 텍스트 수신 및 전처리</h3>
+                        <p><strong>NeoAli에서 전달받은 추출 텍스트 처리</strong></p>
+                        <p>텍스트 정규화 및 클리닝</p>
+                        <p>구조화된 데이터 형태로 변환</p>
                     </div>
                     
                     <div class="process-item datastreams">
-                        <h3>개인정보 검출</h3>
-                        <p>추출된 텍스트에서 개인정보 검출</p>
-                        <p>presidio 라이브러리 활용</p>
-                        <p><strong>※ 관리자 업로드만 Human-in-the-Loop 적용</strong></p>
+                        <h3>🔍 중복 검사</h3>
+                        <p><strong>추출된 텍스트를 이용한 중복 검사</strong></p>
+                        <p>벡터 임베딩 기반 유사도 비교</p>
+                        <p>기존 Qdrant DB 문서들과 비교 분석</p>
+                    </div>
+                    
+                    <div class="process-item datastreams">
+                        <h3>🛡️ 개인정보 검출</h3>
+                        <p><strong>추출된 텍스트에서 개인정보 스캔</strong></p>
+                        <p>Presidio 라이브러리 활용</p>
+                        <p>현재: 검출 시 자동 삭제</p>
+                        <p>향후: Human-in-the-Loop 적용</p>
                     </div>
                 </div>
                 
@@ -412,134 +341,291 @@
                     <div class="process-item datastreams">
                         <div class="decision">👤</div>
                         <h3>관리자 업로드</h3>
-                        <p>개인정보 검출 시 Human-in-the-Loop</p>
-                        <p>도로공사 직원이 최종 승인 여부 판단</p>
+                        <p>배치 처리로 대량 업로드 지원</p>
+                        <p>영구 저장 (관리도구 완성 후 승인 시스템 적용)</p>
                     </div>
                     
                     <div class="process-item datastreams">
                         <div class="decision">✓</div>
                         <h3>사용자 업로드</h3>
-                        <p>개인정보 포함 여부와 관계없이 처리</p>
+                        <p>실시간 처리</p>
                         <p>질의응답 완료 후 자동 삭제</p>
                     </div>
                 </div>
-                
-                <div class="flow-arrow"></div>
-                
-                <div class="process-item datastreams">
-                    <h3>원본 저장 및 승인 처리</h3>
-                    <p>중복이 아닌 것으로 확인된 원본 문서 파일이 MinIO 서버에 저장됨 (포트 9090)</p>
-                    <p><strong>관리자 업로드:</strong> Human-in-the-Loop 승인 후 영구 저장</p>
-                    <p><strong>사용자 업로드:</strong> 임시 저장 후 질의응답 완료 시 자동 삭제</p>
-                </div>
             </div>
             
-            <div class="arrow"></div>
+            <div class="flow-arrow datastreams"></div>
             
-            <!-- NeoAli RAG 레이어 -->
+            <div class="flow-arrow neoali"></div>
+            
+            <!-- 3단계: RAG 처리 레이어 (NeoAli) -->
             <div class="layer-box neoali">
-                <div class="layer-title neoali">NeoAli RAG 레이어<span class="neoali-badge">NeoAli</span></div>
+                <div class="layer-title neoali">3단계: RAG 처리 레이어<span class="neoali-badge">NeoAli 담당</span></div>
                 
                 <div class="parallel-flows">
                     <div class="flow-column">
                         <div class="process-item neoali">
-                            <h3>문서 수신</h3>
-                            <p>API 엔드포인트를 통해 정제된 문서 수신</p>
+                            <h3>📄 정제된 텍스트 수신</h3>
+                            <p>DataStreams에서 전처리 완료된 텍스트</p>
                         </div>
                         
                         <div class="flow-arrow"></div>
                         
                         <div class="process-item neoali">
-                            <h3>청킹</h3>
+                            <h3>✂️ 청킹</h3>
                             <p>문서를 의미 있는 단위로 분할</p>
                         </div>
                         
                         <div class="flow-arrow"></div>
                         
                         <div class="process-item neoali">
-                            <h3>임베딩</h3>
-                            <p>vLLM-embeddings 서버로 벡터 생성</p>
+                            <h3>🔢 임베딩 생성</h3>
+                            <p>vLLM-embeddings 서버 (포트 8100)</p>
+                            <p>Qwen3-Embedding-0.6B 모델 사용</p>
                         </div>
                         
                         <div class="flow-arrow"></div>
                         
                         <div class="process-item neoali">
-                            <h3>벡터 저장</h3>
-                            <p>Qdrant 벡터 DB에 저장</p>
+                            <h3>🏆 리랭킹</h3>
+                            <p>BGE Reranker 서버 (포트 8101)</p>
+                            <p>BAAI/bge-reranker-v2-m3 모델 사용</p>
+                        </div>
+                        
+                        <div class="flow-arrow"></div>
+                        
+                        <div class="process-item neoali">
+                            <h3>💾 벡터 저장</h3>
+                            <p>Qdrant 벡터 DB에 저장 (포트 6333)</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- 사용자 유형별 처리 흐름 -->
+            <!-- R&R 요약 -->
             <div class="layer-box">
-                <div class="layer-title">사용자 유형별 처리 흐름</div>
+                <div class="layer-title">🎯 R&R 요약</div>
                 
                 <div class="process-group">
-                    <div class="process-item">
-                        <h3>관리자 대량 업로드</h3>
-                        <ul style="text-align: left; padding-left: 20px;">
-                            <li>배치 처리 방식 사용</li>
-                            <li>비동기 처리로 백그라운드 실행</li>
-                            <li>작업 진행상황 모니터링 제공</li>
-                            <li>오류 로깅 및 보고 기능</li>
-                            <li>처리 완료 후 통합 결과 보고</li>
+                    <div class="process-item neoali">
+                        <h3>🔵 NeoAli 책임 영역</h3>
+                        <ul style="text-align: left; font-size: 0.9em;">
+                            <li><strong>문서 파싱 & 텍스트 추출</strong></li>
+                            <li><strong>RAG 처리 레이어 (청킹, 임베딩, 벡터저장)</strong></li>
                         </ul>
                     </div>
                     
-                    <div class="process-item">
-                        <h3>일반 사용자 개별 업로드</h3>
-                        <ul style="text-align: left; padding-left: 20px;">
-                            <li>실시간 처리 방식 사용</li>
-                            <li>동기식 처리로 즉시 결과 반환</li>
-                            <li>개별 파일 상태 실시간 제공</li>
-                            <li>사용자 피드백 즉시 반영</li>
-                            <li><strong>질의응답 완료 후 자동 삭제</strong></li>
-                            <li><strong>임시 저장소에만 보관 (영구 저장 없음)</strong></li>
+                    <div class="process-item datastreams">
+                        <h3>🟡 DataStreams 책임 영역</h3>
+                        <ul style="text-align: left; font-size: 0.9em;">
+                            <li><strong>전처리 & 보안 레이어</strong></li>
+                            <li><strong>중복 검사 및 개인정보 검출</strong></li>
+                            <li>기존 WiseNut 시스템 운영 (8B/70B)</li>
+                            <li>내부망 보안 및 인프라 관리</li>
+                            <li>레거시 시스템 연계 (DB/NAS)</li>
+                            <li>사용자 권한 및 보안 체계</li>
+                            <li>Qwen3 대형 모델 구동 (32B/235B)</li>
+                            <li>AI 모델 최적화 및 추론 서비스</li>
+                            <li>멀티모달 기능 (STT/이미지)</li>
                         </ul>
                     </div>
                 </div>
             </div>
             
+            <!-- 프로세스 흐름 명확화 -->
             <div class="note">
-                <p><strong>사용자 유형별 개인정보 처리 방식:</strong> 관리자 업로드 시에는 개인정보 검출 결과를 도로공사 직원이 검토하여 최종 승인 여부를 결정하는 Human-in-the-Loop 방식을 적용합니다. 사용자 개별 업로드의 경우 개인정보 포함 여부와 관계없이 처리되며, 질의응답 완료 후 자동으로 삭제됩니다.</p>
+                <p><strong>🔄 프로세스 흐름:</strong></p>
+                <p>1. <strong>NeoAli</strong>가 문서 파싱하여 순수 텍스트 추출</p>
+                <p>2. 추출된 텍스트를 <strong>DataStreams</strong>에게 전달</p>
+                <p>3. <strong>DataStreams</strong>가 중복검사와 개인정보 검출 수행</p>
+                <p>4. 정제된 텍스트를 <strong>NeoAli</strong>에게 다시 전달</p>
+                <p>5. <strong>NeoAli</strong>가 RAG 파이프라인으로 벡터화 및 저장</p>
+            </div>
+                
+                <div class="tech-box">
+                    <h3 style="margin-top: 0;">⚡ 빠른 시작</h3>
+                    
+                    <div class="process-group">
+                        <div class="process-item">
+                            <h4>1. 환경 설정</h4>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: left; font-size: 0.8em; overflow-x: auto;">
+# .env 파일 생성
+HF_TOKEN=your_huggingface_token
+# 운영용 (DataStreams 신규 시스템)
+CHAT_MODEL_ENDPOINT=http://vllm:8000/v1
+CHAT_MODEL_NAME=default-model  # Qwen3-32B 또는 Qwen3-235B
+# 기존 시스템 (NeoAli WiseNut)
+# LEGACY_WISENUT_8B=http://localhost:8082/v1
+# LEGACY_WISENUT_70B=http://localhost:8081/v1
+# 개발/테스트용 (Together.xyz 백업)
+# CHAT_MODEL_ENDPOINT=https://api.together.xyz/v1
+# CHAT_MODEL_NAME=Qwen/Qwen3-235B-A22B-fp8-tput
+# MODEL_SERVER_API_KEY=your_together_api_key
+# 로컬 서비스
+EMBEDDING_MODEL_ENDPOINT=http://vllm-embeddings:8000/v1
+RERANK_MODEL_ENDPOINT=http://vllm-rerank:8000/v1
+QDRANT_URL=http://qdrant:6333
+ENABLE_RERANK=1</pre>
+                        </div>
+                        
+                        <div class="process-item">
+                            <h4>2. Docker 실행</h4>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: left; font-size: 0.8em; overflow-x: auto;">
+# 개발환경 (모든 서비스 한 서버)
+docker-compose pull
+docker-compose up -d
+
+# 테스트 실행
+docker compose up --abort-on-container-exit test_runner</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="process-group">
+                        <div class="process-item">
+                            <h4>3. 프로덕션 배포</h4>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: left; font-size: 0.8em; overflow-x: auto;">
+# API 서버용
+docker-compose -f docker-compose-api-server.yaml up -d
+
+# 모델 서버용 (H100 GPU)
+docker-compose -f docker-compose-model-server.yaml up -d</pre>
+                        </div>
+                        
+                        <div class="process-item">
+                            <h4>4. 접근 URL</h4>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li><strong>Swagger API:</strong> <code>http://localhost:8080/docs</code></li>
+                                <li><strong>Dev GUI:</strong> <code>http://localhost:8081</code></li>
+                                <li><strong>MinIO Console:</strong> <code>http://localhost:9090</code></li>
+                                <li><strong>Qdrant Dashboard:</strong> <code>http://localhost:6333/dashboard</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tech-box">
+                    <h3 style="margin-top: 0;">📡 API 엔드포인트</h3>
+                    
+                    <div class="process-group">
+                        <div class="process-item">
+                            <h4>Chat Completion</h4>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: left; font-size: 0.8em; overflow-x: auto;">
+POST /v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "default-model",
+  "messages": [
+    {"role": "system", "content": "한국도로공사 ex-GPT 시스템입니다. Qwen3-32B 모델로 구동 중입니다."},
+    {"role": "user", "content": "사용자 질문"}
+  ],
+  "temperature": 0.7,
+  "max_tokens": 4000
+}</pre>
+                        </div>
+                        
+                        <div class="process-item">
+                            <h4>Embeddings</h4>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: left; font-size: 0.8em; overflow-x: auto;">
+POST /v1/embeddings
+Content-Type: application/json
+
+{
+  "input": "임베딩할 텍스트",
+  "model": "default-model"
+}</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="process-group">
+                        <div class="process-item">
+                            <h4>Document Ingest</h4>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: left; font-size: 0.8em; overflow-x: auto;">
+# 실제로는 통합 워크플로우로 처리됨
+# 파일 업로드 후 자동으로 처리되는 프로세스:
+
+1. 문서 업로드 → MinIO 저장
+2. 텍스트 추출 → Knowledge Parser
+3. 전처리 → 중복검사, 개인정보 검출
+4. 벡터화 → Embedding + Reranking
+5. 저장 → Qdrant Vector DB
+
+# 개발자는 OpenAI 호환 API만 사용하면 됨</pre>
+                        </div>
+                        
+                        <div class="process-item">
+                            <h4>응답 형식</h4>
+                            <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; text-align: left; font-size: 0.8em; overflow-x: auto;">
+# 성공 응답
+{
+  "status": "success",
+  "document_id": "doc_12345",
+  "processing_status": "completed|pending|failed"
+}
+
+# 오류 응답
+{
+  "status": "error",
+  "error_code": "INVALID_FORMAT",
+  "message": "지원하지 않는 파일 형식입니다"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tech-box">
+                    <h3 style="margin-top: 0;">🔧 개발 팁</h3>
+                    
+                    <div class="process-group">
+                        <div class="process-item">
+                            <h4>💡 모델 교체</h4>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li>환경변수로 모델 변경 가능</li>
+                                <li><code>DEFAULT_EMBEDDINGS_MODEL</code>: 임베딩 모델</li>
+                                <li><code>DEFAULT_RERANK_MODEL</code>: 리랭크 모델</li>
+                                <li>Hugging Face 라이선스 확인 필수</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="process-item">
+                            <h4>🐛 디버깅</h4>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li><code>docker logs container_name</code>: 로그 확인</li>
+                                <li><code>docker compose ps</code>: 서비스 상태</li>
+                                <li>GPU 메모리: <code>nvidia-smi</code></li>
+                                <li>API 테스트: Swagger UI 활용</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="process-group">
+                        <div class="process-item">
+                            <h4>⚠️ 주의사항</h4>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li>H100 GPU: CUDA 12.8 호환성 확인</li>
+                                <li>**R&R 분리**: NeoAli(기존/보안) + DataStreams(신규/AI)</li>
+                                <li>포트 충돌 주의: 8080(신규 API), 8082(기존 WiseNut)</li>
+                                <li>대형 모델: 32B/235B 모델은 다중 GPU 병렬 처리 필요</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="process-item">
+                            <h4>📊 모니터링</h4>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li>API 응답시간: Swagger UI에서 확인</li>
+                                <li>Qdrant 벡터 수: Dashboard에서 확인</li>
+                                <li>MinIO 파일 수: Console에서 확인</li>
+                                <li>GPU 사용률: <code>watch nvidia-smi</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="note">
+                    <p><strong>📚 추가 문서:</strong> 자세한 API 명세는 서버 실행 후 <code>http://localhost:8080/docs</code>에서 Swagger UI를 통해 확인할 수 있습니다. 개발 중 문제가 발생하면 <code>docker logs</code>를 통해 각 서비스의 로그를 확인하세요.</p>
+                </div>
             </div>
             
-            
-            
-            <script>
-                // FAQ 아코디언 기능
-                document.addEventListener('DOMContentLoaded', function() {
-                    const questions = document.querySelectorAll('.faq-question');
-                    
-                    questions.forEach(question => {
-                        question.addEventListener('click', () => {
-                            const answer = question.nextElementSibling;
-                            const isOpen = answer.classList.contains('show');
-                            
-                            // 모든 답변 닫기
-                            document.querySelectorAll('.faq-answer').forEach(a => {
-                                a.classList.remove('show');
-                            });
-                            
-                            document.querySelectorAll('.faq-question').forEach(q => {
-                                q.classList.remove('active');
-                            });
-                            
-                            // 클릭한 것만 열기 (이미 열려있었다면 닫힘)
-                            if (!isOpen) {
-                                answer.classList.add('show');
-                                question.classList.add('active');
-                            }
-                        });
-                    });
-                    
-                    // 페이지 로드 시 첫 번째 질문 자동 열기
-                    if (questions.length > 0) {
-                        questions[0].click();
-                    }
-                });
-            </script>
         </div>
     </div>
 </body>
